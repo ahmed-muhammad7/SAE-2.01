@@ -18,27 +18,34 @@
 
 <!-- Ici, on modifie le html de sorte à ce qu'il corresponde bien au CSS (en lui ajoutant le formulaire game-form et ses autres balises-->
 
-<!-- Dans form : label, input, select, un h2 dans game-area-header-->
-<div class="game-area hidden "> <!-- Ne pas oublier de remettre hidden-->
+<div class="game-area" hidden >
     <form class ="game-form">
+
         <div class="game-area-header">
-            <h2>
+            <label>
                 <input type="text" name="name" required>
-            </h2>Tapez votre nom d'utilisateur
+            </label>Tapez votre nom d'utilisateur
+            <label>
+                <select>
+                    <option value="Animaux"> Animaux </option>
+                    <option value="Fruits"> Fruits </option>
+                    <option value="Cartes"> Cartes </option>
+                </select>
+            </label> Selectionnez votre niveau
+            <label>
+                <select>
+                    <option value="Facile"> Facile </option>
+                    <option value="Moyen"> Moyen </option>
+                    <option value="Difficile"> Difficile </option>
+                </select>
+            </label> Selectionnez le niveau de difficulte
+            <button type="submit" id="envoyer"> Confirmer </button>
         </div>
+
         <div class="game-board">
-            <select>
-                <option value="Animaux"> Animaux </option>
-                <option value="Fruits"> Fruits </option>
-                <option value="Cartes"> Cartes </option>
-            </select>
-            <select>
-                <option value="Facile"> Facile </option>
-                <option value="Moyen"> Moyen </option>
-                <option value="Difficile"> Difficile </option>
-            </select>
-            <button> Envoyer </button>
+
         </div>
+
     </form>
 </div>
 

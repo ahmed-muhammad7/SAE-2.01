@@ -89,11 +89,11 @@ header h1 {
 }
 
 .game-form label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-label);
-  margin-bottom: 0.25rem;
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-label);
+    margin-bottom: 0.25rem;
 }
 
 .game-form input,
@@ -140,7 +140,7 @@ header h1 {
 .game-area {
   width: 100%;
   max-width: 56rem;
-  margin-top: 2rem;
+  margin-top: 5rem;
 }
 
 .game-area-header {

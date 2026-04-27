@@ -8,7 +8,10 @@ const game = new Game();
 // Ici, on fait en sorte que sur le click, on fasse disparaître la zone "Demarrer une nouvelle partie"
 document.querySelector(".setup-form").addEventListener("click",()=>{
     document.querySelector(".setup-form").setAttribute("hidden", null);
+    document.querySelector(".game-area").removeAttribute("hidden");
 })
+
+
 
 document.querySelector('.game-form').addEventListener('submit', async function (event) {
     event.preventDefault();
