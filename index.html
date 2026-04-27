@@ -11,43 +11,39 @@
 <header><h1>Jeu de Memory</h1></header>
 
 <div class="setup-form">
-  <h2>
+    <h2>
     Démarrer une nouvelle partie
-  </h2>
+    </h2>
 </div>
 
 <!-- Ici, on modifie le html de sorte à ce qu'il corresponde bien au CSS (en lui ajoutant le formulaire game-form et ses autres balises-->
 
 <div class="game-area" hidden >
     <form class ="game-form">
-
         <div class="game-area-header">
-            <label>
-                <input type="text" name="name" required>
-            </label>Tapez votre nom d'utilisateur
-            <label>
+            <input type="text" name="name" required>
+            <label> Saissisez votre nom d'utilisateur </label>
                 <select>
                     <option value="Animaux"> Animaux </option>
                     <option value="Fruits"> Fruits </option>
                     <option value="Cartes"> Cartes </option>
                 </select>
-            </label> Selectionnez votre niveau
-            <label>
+            <label> Sélectionnez le niveau </label>
                 <select>
                     <option value="Facile"> Facile </option>
                     <option value="Moyen"> Moyen </option>
                     <option value="Difficile"> Difficile </option>
                 </select>
-            </label> Selectionnez le niveau de difficulte
-            <button type="submit" id="envoyer"> Confirmer </button>
+             <label>Sélectionnez le niveau de difficulté</label>
+            <button type="submit" id="confirmer"> Confirmer </button>
         </div>
-
-        <div class="game-board">
-
+        <div class="game-board"> <!-- à compléter (le timer) -->
+            <button id="abandon" hidden> Abandon </button>
+            <p class = "game-timer"></p>
         </div>
-
     </form>
 </div>
+
 
 </body>
 </html>

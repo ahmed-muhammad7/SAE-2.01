@@ -11,6 +11,18 @@ document.querySelector(".setup-form").addEventListener("click",()=>{
     document.querySelector(".game-area").removeAttribute("hidden");
 })
 
+// La fonction qui permet de faire le timer (toujours incomplet)
+let seconds= 0;
+function updateTimer(){
+    const timer = document.querySelector(".game-timer");
+    let mins = 0;
+    let secs = 0;
+    timer.textContent = `${mins} : ${secs}`;
+    if(seconds >= 0)
+        seconds++;
+}
+updateTimer();
+setInterval(updateTimer,1000);
 
 
 document.querySelector('.game-form').addEventListener('submit', async function (event) {
