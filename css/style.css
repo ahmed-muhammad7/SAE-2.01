@@ -51,7 +51,8 @@ body {
 
 /* ── Header ── */
 header h1 {
-  font-size: 2.25rem;
+  font-family: Chiller ;
+  font-size: 5rem;
   font-weight: 700;
   color: var(--color-text-title);
   text-align: center;
@@ -59,13 +60,18 @@ header h1 {
 
 /* ── Setup form panel ── */
 .setup-form {
-  margin-top: 1.5rem;
+  margin-top: 18rem;
   padding: 2rem;
   background-color: var(--color-bg-panel);
-  border-radius: 0.5rem;
+  border-radius: 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 56rem;
+}
+
+/* On rajoute seulement un effet de survol sur Demarrer la partie */
+.setup-form:hover{
+    background-color: #070C4D;
 }
 
 .setup-form h2 {

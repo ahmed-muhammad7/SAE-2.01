@@ -31,8 +31,7 @@ export class Game {
    */
   startGame(id) {
     this.#id = id;
-
-    // Todo À commpléter
+    // Todo À compléter
 
   }
 
