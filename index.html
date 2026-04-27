@@ -1,49 +1,58 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jeu de Memory</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/app.js" type="module"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Memory</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/app.js" type="module"></script>
 </head>
 <body>
 <header><h1>Jeu de Memory</h1></header>
 
 <div class="setup-form">
     <h2>
-    Démarrer une nouvelle partie
+        Démarrer une nouvelle partie
     </h2>
+
+    <form class ="game-form">
+        <label for="pseudo"> Saisissez votre nom d'utilisateur </label>
+        <input type="text" id="pseudo" name="name" required>
+
+        <label for="collection"> Sélectionnez la collection d'images </label>
+        <select id="collection" name="collection">
+            <option value="animals"> Animaux </option>
+            <option value="fruits"> Fruits </option>
+            <option value="cars"> Cartes </option>
+        </select>
+
+        <label for="difficulty">Sélectionnez le niveau de difficulté</label>
+        <select id="difficulty" name="difficulty">
+            <option value="1"> Facile </option>
+            <option value="2"> Moyen </option>
+            <option value="3"> Difficile </option>
+        </select>
+
+        <button type="submit" id="confirmer"> Confirmer </button>
+    </form>
 </div>
 
-<!-- Ici, on modifie le html de sorte à ce qu'il corresponde bien au CSS (en lui ajoutant le formulaire game-form et ses autres balises-->
 
 <div class="game-area" hidden >
-    <form class ="game-form">
-        <div class="game-area-header">
-            <input type="text" name="name" required>
-            <label> Saissisez votre nom d'utilisateur </label>
-                <select>
-                    <option value="Animaux"> Animaux </option>
-                    <option value="Fruits"> Fruits </option>
-                    <option value="Cartes"> Cartes </option>
-                </select>
-            <label> Sélectionnez le niveau </label>
-                <select>
-                    <option value="Facile"> Facile </option>
-                    <option value="Moyen"> Moyen </option>
-                    <option value="Difficile"> Difficile </option>
-                </select>
-             <label>Sélectionnez le niveau de difficulté</label>
-            <button type="submit" id="confirmer"> Confirmer </button>
-        </div>
-        <div class="game-board"> <!-- à compléter (le timer) -->
-            <button id="abandon" hidden> Abandon </button>
-            <p class = "game-timer"></p>
-        </div>
-    </form>
+    <div class="game-area-header">
+        <p class = "game-timer">0 : 00</p>
+        <button id="abandon"> Abandon </button>
+    </div>
+
+    <div class="game-board">
+    </div>
 </div>
 
 
 </body>
 </html>
+
+
+<!-- J'ai séparer le formulaire d'accueil et le plateau de jeu pour éviter les bugs de rechargement de page
+quand on clique sur Abandon. J'ai ajouter des id sur les champs et utiliser des chiffres pour la difficulté,
+ pour rendre la récupération des données plus simple dans le code JavaScript  -->
