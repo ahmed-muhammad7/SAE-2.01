@@ -60,7 +60,7 @@ header h1 {
 
 /* ── Setup form panel ── */
 .setup-form {
-  margin-top: 18rem;
+  margin-top: 10rem;
   padding: 2rem;
   background-color: var(--color-bg-panel);
   border-radius: 2rem;

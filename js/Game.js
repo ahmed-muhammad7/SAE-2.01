@@ -31,7 +31,6 @@ export class Game {
    */
   startGame(id) {
     this.#id = id;
-    // Todo À compléter
 
   }
 
