@@ -7,10 +7,8 @@ import {imageCollections} from "./ImageCollection.js";
 
 // On crée une "instance" (un objet) à partir de nos classes.
 // Ça va nous permet d'utiliser leurs méthodes (comme game.startGame())
-
 const domManager = new DOMManager();
 const game = new Game();
-
 
 
 //                         Config du Chronometre
@@ -44,8 +42,6 @@ const updateTimer = () => {
 //                        Formulaire
 
 
-
-
 // On met 'async' devant car on va faire un appel au serveur qui prend du temps
 document.querySelector('.game-form').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -55,13 +51,42 @@ document.querySelector('.game-form').addEventListener('submit', async (event) =>
     // On transforme la valeur de difficulté en "vrai" chiffre avec parseInt
     const difficultyLevel = parseInt(document.getElementById('difficulty').value);
     const collectionName = document.getElementById('collection').value;
+
     // On stocke le nom de la collection puis on met le nom de la collection dans le tableau d'images
-    const images = imageCollections[collectionName];
+    const toutesLesImages = imageCollections[collectionName];
+
+
+    //                                          GESTION DE LA DIFFICULTÉ
+
+    // On définit combien de paires on veut selon la difficulté
+    let nbPaires;
+    if (difficultyLevel === 1) {
+        nbPaires = 3; // Facile : 3 paires (6 cartes)
+    } else if (difficultyLevel === 2) {
+        nbPaires = 5; // Moyen : 5 paires (10 cartes)
+    } else {
+        nbPaires = 8; // Difficile : 8 paires (16 cartes)
+    }
+
+
+    //                                          DUPLICATION ET MÉLANGE
+
+    // On "coupe" le tableau pour garder uniquement le nombre d'images voulu (selon la difficulté)
+    const imagesDeBase = toutesLesImages.slice(0, nbPaires);
+
+    // On crée un nouveau tableau avec 2 fois les images de base
+    const cartesEnDouble = [...imagesDeBase, ...imagesDeBase];
+    // On mélange le tout (-0.5 pour avoir 50% de tirer un nombre negatif pour melanger les cartes )
+    cartesEnDouble.sort(() => Math.random() - 0.5);
+
+
+
     try {
         // On demande au fichier ApiService d'envoyer la requête POST au serveur.
         // 'await' met le code en pause jusqu'à ce que le serveur nous réponde avec l'ID de la partie.
         const data = await ApiService.createGame(pseudo, difficultyLevel);
         console.log('Partie créée avec succès ! ID:', data.id);
+
         //  on modifie le DOM
         // On cache le menu d'accueil en lui ajoutant "hidden".
         document.querySelector(".setup-form").setAttribute("hidden", "true");
@@ -76,8 +101,10 @@ document.querySelector('.game-form').addEventListener('submit', async (event) =>
 
         // On lui transmet toutes les infos dont il a besoin pour préparer le plateau.
         game.startGame(data.id);
-        domManager.createCards(images);
+        // on donne bien notre tableau "cartesEnDouble" qui a été mélangé !
+        domManager.createCards(cartesEnDouble);
         tournerCartes();
+
     } catch (error) {
         // Si le serveur plante ou qu'il y a un souci de réseau
         console.error('Erreur lors du lancement :', error);
@@ -85,24 +112,60 @@ document.querySelector('.game-form').addEventListener('submit', async (event) =>
     }
 });
 
-// On va créer une fonction pour pouvoir faire tourner les cartes (idée, si ça ne marche pas/ pas optimal on pourra l'enlever)
-function tournerCartes() {
-    // On veut ajouter le fait que la carte tourne lors du click. Donc d'abord on sélectionne l'ensemble des cartes
+
+//                        Abandon
+
+
+// Quand on clique sur Abandon, on arrête le temps et on revient au menu
+document.getElementById('abandon').addEventListener('click', async () => {
+    clearInterval(timerInterval);
+    await game.endGame();
+    document.querySelector(".game-area").setAttribute("hidden", "true");
+    document.querySelector(".setup-form").removeAttribute("hidden");
+    alert("Partie abandonnée ! Retour à l'accueil.");
+});
+
+
+//                        Cartes (Animation)
+
+
+// On crée deux variables pour mémoriser l'état du jeu
+let cartesRetournees = []; // Va stocker les cartes qu'on a cliquées
+let peutCliquer = true;
+
+// Fonction fléchée pour gérer les clics sur les cartes
+const tournerCartes = () => {
+    // On sélectionne toutes les cartes du plateau
     const cards = document.querySelectorAll(".card");
 
-// Pour chaque carte, on va lui ajouter l'évènement click et montrer l'image (en lui ajoutant/enlevant la classe flip)
     cards.forEach(card => {
         card.addEventListener("click", () => {
-            card.classList.add("flip");
-        })
-    })
+            // Le "return" arrête immédiatement la fonction.
+            if (!peutCliquer || card.classList.contains("flip")) {
+                return;
+            }
 
-// Après que la carte s'est retournée, on la reretourne de manière à cacher l'image
-    cards.forEach(card => {
-        card.addEventListener("click", () => {
-            setInterval(() => {
-                card.classList.remove("flip");
-            }, 600)
-        })
-    })
-}
+            // On retourne la carte cliquée
+            card.classList.add("flip");
+            // On l'ajoute dans notre petite mémoire
+            cartesRetournees.push(card);
+
+            if (cartesRetournees.length === 2) {
+                // On met le "bloqueur" pour bloquer les clics sur les autres cartes
+                peutCliquer = false;
+
+                // On lance un minuteur avec setTimeout (et plus setInterval !)
+                setTimeout(() => {
+
+                    cartesRetournees[0].classList.remove("flip");
+                    cartesRetournees[1].classList.remove("flip");
+
+                    // On vide notre mémoire pour le prochain tour
+                    cartesRetournees = [];
+                    // On retire le "bloqueur" pour qu'on puisse rejouer
+                    peutCliquer = true;
+                }, 1000);
+            }
+        });
+    });
+};
