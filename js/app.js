@@ -11,6 +11,15 @@ const domManager = new DOMManager();
 const game = new Game();
 
 
+
+//                         Compteur qui servent pour la fin
+
+
+// On ajoute des compteurs pour savoir quand le jeu est fini
+let pairesTrouvees = 0;
+let totalPaires = 0;
+
+
 //                         Config du Chronometre
 
 
@@ -68,6 +77,10 @@ document.querySelector('.game-form').addEventListener('submit', async (event) =>
         nbPaires = 8; // Difficile : 8 paires (16 cartes)
     }
 
+    // On sauvegarde ce nombre pour savoir quand le joueur a gagné et on remet à 0
+    totalPaires = nbPaires;
+    pairesTrouvees = 0;
+
 
     //                                          DUPLICATION ET MÉLANGE
 
@@ -119,7 +132,11 @@ document.querySelector('.game-form').addEventListener('submit', async (event) =>
 // Quand on clique sur Abandon, on arrête le temps et on revient au menu
 document.getElementById('abandon').addEventListener('click', async () => {
     clearInterval(timerInterval);
-    await game.endGame();
+
+    // On calcule combien de paires il restait à trouver pour l'envoyer au serveur
+    const pairesRestantes = totalPaires - pairesTrouvees;
+    await game.endGame(pairesRestantes);
+
     document.querySelector(".game-area").setAttribute("hidden", "true");
     document.querySelector(".setup-form").removeAttribute("hidden");
     alert("Partie abandonnée ! Retour à l'accueil.");
@@ -139,7 +156,7 @@ const tournerCartes = () => {
     const cards = document.querySelectorAll(".card");
 
     cards.forEach(card => {
-        card.addEventListener("click", () => {
+        card.addEventListener("click", async () => {
             // Le "return" arrête immédiatement la fonction.
             if (!peutCliquer || card.classList.contains("flip")) {
                 return;
@@ -154,17 +171,60 @@ const tournerCartes = () => {
                 // On met le "bloqueur" pour bloquer les clics sur les autres cartes
                 peutCliquer = false;
 
-                // On lance un minuteur avec setTimeout (et plus setInterval !)
-                setTimeout(() => {
 
-                    cartesRetournees[0].classList.remove("flip");
-                    cartesRetournees[1].classList.remove("flip");
 
-                    // On vide notre mémoire pour le prochain tour
+                //                 Comparaison
+
+
+                // On va chercher l'URL de l'image cachée dans nos deux cartes
+                const image1 = cartesRetournees[0].querySelector('.card-back img').src;
+                const image2 = cartesRetournees[1].querySelector('.card-back img').src;
+
+                // Si les deux images sont identiques
+                if (image1 === image2) {
+
+                    // On ajoute 1 au compteur de paires trouvées !
+                    pairesTrouvees++;
+
+                    // Si c'est gagné on les laisse retournées.
+                    // on enlève le "verrou" pour continuer à jouer.
                     cartesRetournees = [];
-                    // On retire le "bloqueur" pour qu'on puisse rejouer
                     peutCliquer = true;
-                }, 1000);
+
+
+
+                    //                Verification de la victoire
+
+
+
+                    if (pairesTrouvees === totalPaires) {
+                        // On a trouvé toutes les paires !
+                        clearInterval(timerInterval); // On arrête le chrono
+
+                        // On envoie le score final au serveur (0 paires restantes !)
+                        await game.endGame(0);
+
+                        // On félicite le joueur et on retourne à l'accueil
+                        setTimeout(() => {
+                            alert("Bravo, vous avez gagné !");
+                            document.querySelector(".game-area").setAttribute("hidden", "true");
+                            document.querySelector(".setup-form").removeAttribute("hidden");
+                        }, 500); // Petit délai de 0.5s pour voir la dernière carte se retourner
+                    }
+
+                } else {
+                    // Si c'est pas une paire On lance un minuteur de 1 seconde
+                    setTimeout(() => {
+                        // On enlève la classe "flip" pour recacher nos deux cartes
+                        cartesRetournees[0].classList.remove("flip");
+                        cartesRetournees[1].classList.remove("flip");
+
+                        // On vide notre mémoire pour le prochain tour
+                        cartesRetournees = [];
+                        // On retire le verrou pour qu'on puisse rejouer
+                        peutCliquer = true;
+                    }, 1000);
+                }
             }
         });
     });

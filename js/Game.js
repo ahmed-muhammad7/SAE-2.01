@@ -1,39 +1,28 @@
-import {imageCollections} from './ImageCollection.js';
 import {ApiService} from './ApiService.js';
 
-
 export class Game {
-  /**
-   * @type {number} id identifiant de la partie en cours
-   */
-  #id;
-
-  async endGame() {
-    // Todo À compléter
+    /**
+     * @type {number} id identifiant de la partie en cours
+     */
+    #id;
 
 
-    const idARemplacer = 1234;
-    const nombreDePairesRestanteARemplacer = 5678;
-
-    try {
-      const result = await ApiService.updateGameResult(idARemplacer, nombreDePairesRestanteARemplacer);
-      console.log('Fin de partie:', result);
-    } catch (error) {
-      console.error('Error:', error);
-      alert(error.message || 'Erreur lors de la fin de la partie');
+    async endGame(pairesRestantes) {
+        try {
+            // On utilise le vrai ID (this.#id) et le vrai chiffre
+            const result = await ApiService.updateGameResult(this.#id, pairesRestantes);
+            console.log('Fin de partie enregistrée sur le serveur :', result);
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message || 'Erreur lors de la fin de la partie');
+        }
     }
 
-  }
-
-  /**
-   * Start a new game.
-   * @param {number} id - The game ID.
-   */
-  startGame(id) {
-    this.#id = id;
-
-  }
-
-  // Todo À compléter
-
+    /**
+     * Start a new game.
+     * @param {number} id - The game ID.
+     */
+    startGame(id) {
+        this.#id = id;
+    }
 }
