@@ -23,28 +23,44 @@ let totalPaires = 0;
 //                         Config du Chronometre
 
 
-// On initialise le compteur à 0.
-let seconds = 0;
-
-// C'est important pour pouvoir l'arrêter quand la partie est finie.
+let tempsRestant = 0;
 let timerInterval = null;
 
 // On déclare la fonction qui va mettre à jour l'affichage du temps.
-const updateTimer = () => {
-    // On cible la balise <p> dans le HTML qui va afficher le chrono.
+const updateTimer = async () => { // On ajoute 'async' car le Game Over contacte le serveur
     const timerElement = document.querySelector(".game-timer");
 
-    // On calcule le nombre de minutes
-    const mins = Math.floor(seconds / 60);
-
-    // On calcule les secondes restantes avec le modulo (%).
-    // Le padStart sert a si on a 5 secondes, sa écrit "05" au lieu de "5".
-    const secs = (seconds % 60).toString().padStart(2, '0');
-
+    // On calcule les minutes et secondes restantes
+    const mins = Math.floor(tempsRestant / 60);
+    const secs = (tempsRestant % 60).toString().padStart(2, '0');
     timerElement.textContent = `${mins} : ${secs}`;
 
-    // On rajoute 1 seconde pour le prochain tour.
-    seconds++;
+
+
+
+    //                     Le game Over
+
+
+
+
+    if (tempsRestant === 0) {
+        clearInterval(timerInterval); // On arrête le chrono
+
+        // On bloque les clics sur les cartes pour empêcher de jouer
+        peutCliquer = false;
+
+        // On envoie la défaite au serveur
+        const pairesRestantes = totalPaires - pairesTrouvees;
+        await game.endGame(pairesRestantes);
+
+        // On prévient le joueur et on le renvoie à l'accueil
+        alert("Temps écoulé AHAHAHAH ! Game Over 💀");
+        document.querySelector(".game-area").setAttribute("hidden", "true");
+        document.querySelector(".setup-form").removeAttribute("hidden");
+    } else {
+        // S'il reste du temps, on enlève 1 seconde
+        tempsRestant--;
+    }
 };
 
 
@@ -70,11 +86,14 @@ document.querySelector('.game-form').addEventListener('submit', async (event) =>
     // On définit combien de paires on veut selon la difficulté
     let nbPaires;
     if (difficultyLevel === 1) {
-        nbPaires = 3; // Facile : 3 paires (6 cartes)
+        nbPaires = 3; // Facile
+        tempsRestant = 15; // 15 secondes
     } else if (difficultyLevel === 2) {
-        nbPaires = 5; // Moyen : 5 paires (10 cartes)
+        nbPaires = 5; // Moyen
+        tempsRestant = 30; // 30 secondes
     } else {
-        nbPaires = 8; // Difficile : 8 paires (16 cartes)
+        nbPaires = 8; // Difficile
+        tempsRestant = 60; // 1 minute
     }
 
     // On sauvegarde ce nombre pour savoir quand le joueur a gagné et on remet à 0
@@ -106,14 +125,19 @@ document.querySelector('.game-form').addEventListener('submit', async (event) =>
         // On affiche le plateau de jeu en lui retirant son "hidden".
         document.querySelector(".game-area").removeAttribute("hidden");
 
-        // On remet le chrono à zéro.
-        seconds = 0;
         updateTimer();
         // On lance la fonction updateTimer sera appelée toutes les (1 seconde).
         timerInterval = setInterval(updateTimer, 1000);
 
         // On lui transmet toutes les infos dont il a besoin pour préparer le plateau.
         game.startGame(data.id);
+
+        // Securite pour jouer sans bug incroyable
+        // On vide le plateau avant de recréer les cartes
+        document.querySelector('.game-board').innerHTML = '';
+        // On réactive les clics
+        peutCliquer = true;
+
         // on donne bien notre tableau "cartesEnDouble" qui a été mélangé !
         domManager.createCards(cartesEnDouble);
         tournerCartes();
